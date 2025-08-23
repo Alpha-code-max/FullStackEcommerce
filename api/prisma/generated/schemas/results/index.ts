@@ -1,0 +1,13 @@
+export { ProductFindUniqueResultSchema } from './ProductFindUniqueResult.schema';
+export { ProductFindFirstResultSchema } from './ProductFindFirstResult.schema';
+export { ProductFindManyResultSchema } from './ProductFindManyResult.schema';
+export { ProductCreateResultSchema } from './ProductCreateResult.schema';
+export { ProductCreateManyResultSchema } from './ProductCreateManyResult.schema';
+export { ProductUpdateResultSchema } from './ProductUpdateResult.schema';
+export { ProductUpdateManyResultSchema } from './ProductUpdateManyResult.schema';
+export { ProductUpsertResultSchema } from './ProductUpsertResult.schema';
+export { ProductDeleteResultSchema } from './ProductDeleteResult.schema';
+export { ProductDeleteManyResultSchema } from './ProductDeleteManyResult.schema';
+export { ProductAggregateResultSchema } from './ProductAggregateResult.schema';
+export { ProductGroupByResultSchema } from './ProductGroupByResult.schema';
+export { ProductCountResultSchema } from './ProductCountResult.schema';
