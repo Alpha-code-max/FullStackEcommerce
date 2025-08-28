@@ -1,4 +1,7 @@
 import { Router } from "express"
+import isAuthenticated from "src/middleware/authMiddleware"
+import isAuthorized from "src/middleware/roleMiddleware"
+
 import { 
   getProducts, 
   postProducts, 
@@ -8,13 +11,15 @@ import {
   patchProduct 
 } from "./productController"
 
+
 const productsRouter = Router()
-productsRouter.get('/', getProducts)
-productsRouter.post('/', postProducts)
+productsRouter.get('/', isAuthenticated, getProducts)
+productsRouter.post('/', isAuthenticated, isAuthorized("admin"), postProducts)
 productsRouter.get('/:id', getProduct)
-productsRouter.put('/:id', putProduct)
-productsRouter.delete('/:id', deleteProduct)
-productsRouter.patch('/:id', patchProduct)
+productsRouter.put('/:id', isAuthenticated, isAuthorized("admin"), putProduct)
+
+productsRouter.delete('/:id', isAuthenticated, isAuthorized("admin"), deleteProduct)
+productsRouter.patch('/:id', isAuthenticated, isAuthorized("admin"), patchProduct)
 
 
 export default productsRouter

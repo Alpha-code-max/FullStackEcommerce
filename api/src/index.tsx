@@ -1,18 +1,29 @@
 import express, {json, urlencoded} from 'express'
-
 import productsRouter from './routes/products/product'
+import session from 'express-session'
+import userRouter from './routes/auth/user'
 
 const app = express()
 const port = 3000
 
 app.use(json())
 app.use(urlencoded({extended: false}))
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 24, sameSite: 'lax' }
+
+}))
+
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
 app.use('/products', productsRouter)
+app.use('/user', userRouter)
+
 
 app.get('/products', (req, res) => {
   res.send('the list of products is here')

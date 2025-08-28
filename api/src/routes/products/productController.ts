@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { ProductInputSchema, ProductInputType } from "../../../prisma/generated/schemas/variants/input/Product.input";
+import { ProductInputSchema, ProductInputType } from "../../schema/product.schema";
+import { ZodError } from "zod";
 
 
 
@@ -21,29 +22,40 @@ const getProducts = async (req: Request, res: Response) => {
 // ==============================
 // Post a new product
 // ==============================
+
 const postProducts = async (req: Request, res: Response) => {
   try {
+    // Validate input against schema
     const data: ProductInputType = ProductInputSchema.parse(req.body);
 
+    // Attach userId if available (don’t pass undefined)
+    // @ts-ignore - comes from auth middleware
+      data.userId = req.userId;
+    
+
+    // Business rule validation
     if (data.price <= 0) {
-      return res.status(400).json({ error: "Price must be greater than 0" });
+      return res.status(400).json({ message: "Price must be greater than 0" });
     }
 
+    // Save product
     const product = await prisma.product.create({ data });
 
-    res.json({ message: "Product created successfully", product });
-  } catch (error: any) {
-    if (error.name === "ZodError") {
-      return res.status(400).json({ 
-        message: "Invalid product data provided",
-        details: error.errors.map((err: any) => ({
-          field: err.path.join('.'),
-          error: err.message
-        }))
-      });
-
+    return res.status(201).json({
+      message: "Product created successfully",
+      product,
+    });
+  } catch (error: unknown) {
+    // Handle schema validation errors
+    if (error instanceof ZodError) {
+      return res.status(400).json({ message: "Invalid product data" });
     }
-    res.status(500).json({ message: "Error creating product", error: error.message });
+
+    // Log unexpected errors for debugging
+    console.error("Create product error:", error);
+
+    // Generic fallback
+    return res.status(500).json({ message: "Something went wrong" });
   }
 };
 
