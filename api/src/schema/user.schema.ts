@@ -7,6 +7,7 @@ export const UserSchema = z.object({
   email: z.string().email("Invalid email"),   // Must be valid email
   password: z.string().min(6, "Password must be at least 6 characters"),
   address: z.string().min(1, "Address is required"),
+  order: z.array(z.string()),
   createdAt: z.date(),
   role: z.enum(["user", "admin"]),
 });
@@ -15,6 +16,7 @@ export const UserSchema = z.object({
 export const UserInputSchema = UserSchema.omit({
   id: true,
   createdAt: true,
+  order: true
 });
 
 export const UserLoginSchema = UserSchema.pick({

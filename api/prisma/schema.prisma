@@ -14,24 +14,73 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
   name      String
-  email     String   @unique
+  email     String    @unique
   password  String
   address   String
-  createdAt DateTime @default(now())
-  role      String   @default("user")
+  orders    Order[]   // Changed from 'order' to 'orders' (plural)
+  products  Product[] // Added back-relation for products
+  createdAt DateTime  @default(now())
+  role      String    @default("user")
 }
 
 model Product {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
   name        String
-  price       Int
-  category    String
-  image       String?  @default("")
-  userId      String?     @default("")
+  price       Float
+  image       String      @default("")
   description String
-  stock       Int?     @default(0)
-  createdAt   DateTime? @default(now())
+  stock       Int         @default(0)
+  createdAt   DateTime?    @default(now())
+  updatedAt   DateTime?    @updatedAt
+
+  // Relations
+  categoryId  String?     @db.ObjectId
+  category    Category?   @relation(fields: [categoryId], references: [id])
+
+  userId      String?      @db.ObjectId
+  user        User?        @relation(fields: [userId], references: [id])
+
+  orderItems  OrderItem[]
 }
 
+
+model Category {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Order {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String      @db.ObjectId // Added @db.ObjectId annotation
+  user      User        @relation(fields: [userId], references: [id])
+  items     OrderItem[]
+  status    OrderStatus @default(PENDING)
+  total     Float
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model OrderItem {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  orderId     String  @db.ObjectId
+  productId   String  @db.ObjectId
+  quantity    Int
+  price       Float
+  productName String?  // 👈 new field
+  order       Order   @relation(fields: [orderId], references: [id])
+  product     Product @relation(fields: [productId], references: [id])
+}
+
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}

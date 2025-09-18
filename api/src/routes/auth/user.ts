@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express'
 import { PrismaClient } from "@prisma/client";
 import { UserInputSchema, UserInputType, UserLoginSchema, UserLoginType } from '../../schema/user.schema';
-import jwt from 'jsonwebtoken';
+
 
 import bcrypt from 'bcryptjs';
 
@@ -35,7 +35,8 @@ userRouter.post("/login", async (req: Request, res: Response) => {
 
     // ✅ Store user in the session
     req.session.user = {
-      id: Number(user.id),
+      id: user.id,
+      name: user.name,
       email: user.email,
       role: user.role,
     };
@@ -74,6 +75,15 @@ userRouter.post('/register', async (req: Request, res: Response) => {
       data: userData,
     });
 
+    
+  // ✅ Store user in the session
+    req.session.user = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
+
     res.json({ message: "User created", user });
   } catch (error: any) {
     res.status(500).json({ message: "Error creating user", error: error.message });
@@ -87,6 +97,13 @@ userRouter.post('/logout', async(req: Request, res: Response) => {
     return res.json({message: "Logged Out"})
 
   })
+})
+
+userRouter.get('/me', async (req: Request, res: Response) => {
+  if(!req.session.user) {
+    return res.status(401).json({message: "Not authenticated"})
+  }
+  return res.json(req.session.user)
 })
 
 export default userRouter;

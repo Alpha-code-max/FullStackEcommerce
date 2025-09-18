@@ -1,0 +1,16 @@
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  image?: string;
+  inStock: boolean;
+  features?: string[];
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  description?: string;
+}

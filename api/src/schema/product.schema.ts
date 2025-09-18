@@ -2,22 +2,29 @@
 import { z } from "zod";
 
 export const ProductSchema = z.object({
-  id: z.string().optional(),        // Prisma will generate
+  id: z.string().optional(),        
   name: z.string(),
   price: z.number(),
-  category: z.string(),
+  categoryId: z.string().optional(),   // ObjectId
   image: z.string().optional(),
   description: z.string(),
   stock: z.number().optional(),
-  userId: z.number().optional(),    // added for relation
-  createdAt: z.date().optional(),   // Prisma will generate
+  userId: z.string().optional(),                  // required, ObjectId
+  user: z.object({
+    name: z.string(),
+    email: z.string().email(),
+  }),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
 });
 
 // ✅ Schema for input
 export const ProductInputSchema = ProductSchema.omit({
   id: true,
   createdAt: true,
-  userId: true,
+  updatedAt: true,
+  user: true,
+  categoryId: true,
 });
 
 

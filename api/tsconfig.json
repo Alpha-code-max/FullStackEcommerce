@@ -2,6 +2,7 @@
     "compilerOptions": {
         "target": "ES2022",
         "module": "ESNext",
+        "typeRoots": ["./src/types", "./node_modules/@types"],
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
         "outDir": "./dist",

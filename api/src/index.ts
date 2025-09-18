@@ -1,11 +1,17 @@
 import express, {json, urlencoded} from 'express'
+import cors from 'cors'
 import productsRouter from './routes/products/product'
 import session from 'express-session'
 import userRouter from './routes/auth/user'
+import ordersRouter from './routes/orders/order'
 
 const app = express()
 const port = 3000
 
+app.use(cors({
+  origin: 'http://localhost:3001', // allow your frontend origin
+  credentials: true               // if you're using cookies or auth headers
+}));
 app.use(json())
 app.use(urlencoded({extended: false}))
 app.use(session({
@@ -23,6 +29,7 @@ app.get('/', (req, res) => {
 
 app.use('/products', productsRouter)
 app.use('/user', userRouter)
+app.use('/orders', ordersRouter)
 
 
 app.get('/products', (req, res) => {
