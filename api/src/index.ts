@@ -28,8 +28,6 @@ app.get('/', (req, res) => {
 
 app.use('/api/products', productsRouter)
 app.use('/user', userRouter)
-app.use('/orders', ordersRouter)
-
 
 app.get('/products', (req, res) => {
   res.send('the list of products is here')
