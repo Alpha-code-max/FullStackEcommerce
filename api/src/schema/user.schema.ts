@@ -2,7 +2,7 @@
 import { z } from "zod";
 
 export const UserSchema = z.object({
-  id: z.string(),                             // ObjectId as string
+  id: z.union([z.string(), z.number()]).transform(String), // ObjectId as string
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email"),   // Must be valid email
   password: z.string().min(6, "Password must be at least 6 characters"),

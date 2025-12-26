@@ -5,7 +5,8 @@ import session from 'express-session';
 declare module 'express-session' {
   interface SessionData {
     user?: {
-      id: number;
+      id: string;
+      name: string | null;
       email: string;
       role: string;
     };
