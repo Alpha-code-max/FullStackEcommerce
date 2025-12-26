@@ -9,7 +9,7 @@ import {
   putProduct, 
   deleteProduct, 
   patchProduct 
-} from "./productController"
+} from "./productController.js"
 
 
 const productsRouter = Router()
