@@ -1,6 +1,6 @@
 import { Router } from "express"
-import isAuthenticated from "src/middleware/authMiddleware"
-import isAuthorized from "src/middleware/roleMiddleware"
+import isAuthenticated from "../../middleware/authMiddleware.js"
+import isAuthorized from "../../middleware/roleMiddleware.js"
 
 import { 
   getProducts, 
