@@ -1,9 +1,8 @@
 import express, {json, urlencoded} from 'express'
 import cors from 'cors'
-import productsRouter from './routes/products/product'
+import productsRouter from './routes/products/product.js'
 import session from 'express-session'
-import userRouter from './routes/auth/user'
-import ordersRouter from './routes/orders/order'
+import userRouter from './routes/auth/user.js'
 
 const app = express()
 const port = 5000
