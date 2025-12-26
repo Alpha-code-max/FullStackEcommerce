@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { ProductSchema, ProductType, ProductInputSchema, ProductInputType } from "../../schema/product.schema";
+import { ProductSchema, ProductType, ProductInputSchema, ProductInputType } from "../../schema/product.schema.js";
 import { ZodError } from "zod";
 
 const prisma = new PrismaClient();
