@@ -6,45 +6,26 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { useUser } from '@/context/UserContext';
-import { loginUser } from '@/lib/api';
+import { useAuthStore } from '@/store/authStore';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [serverError, setServerError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const { setUser, refreshUser } = useUser();
+
+  const { login, isLoading, error, successMessage, clearMessages } = useAuthStore();
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
+    clearMessages();
 
-  try {
-    setLoading(true);
+    const result = await login({ email, password });
 
-    const res = await fetch("http://localhost:3000/user/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-      credentials: "include", // include cookies if your auth uses sessions
-    });
-
-    if (res.ok) {
-      // ✅ Login successful
-      window.location.href = "/";
-    } else {
-      // ❌ Login failed, show server message if available
-      const data = await res.json().catch(() => ({}));
-      setServerError(data.message || "Login failed");
+    if (result.success) {
+      router.push('/');
     }
-  } catch (error) {
-    setServerError("An error occurred. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
-
-
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
@@ -58,7 +39,6 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin}>
           <CardContent className="space-y-6">
-            {/* Email */}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -66,12 +46,14 @@ export default function LoginPage() {
                 type="email"
                 placeholder="you@example.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  clearMessages();
+                }}
                 required
               />
             </div>
 
-            {/* Password */}
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
@@ -79,23 +61,27 @@ export default function LoginPage() {
                 type="password"
                 placeholder="••••••••"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  clearMessages();
+                }}
                 required
               />
             </div>
 
-            {serverError && <p className="text-sm text-red-500">{serverError}</p>}
+            {error && <p className="text-sm text-red-500">{error}</p>}
+            {successMessage && <p className="text-sm text-green-600">{successMessage}</p>}
           </CardContent>
 
           <CardFooter className="flex flex-col space-y-4">
             <Button
               type="submit"
-              disabled={loading}
+              disabled={isLoading}
               className="w-full rounded-full py-5 text-base font-medium shadow-md 
               bg-gradient-to-r from-blue-500 to-indigo-600 text-white 
               hover:shadow-lg hover:from-blue-600 hover:to-indigo-700"
             >
-              {loading ? 'Logging in...' : 'Log In'}
+              {isLoading ? 'Logging in...' : 'Log In'}
             </Button>
             <p className="text-sm text-gray-500 text-center">
               Don’t have an account?{' '}

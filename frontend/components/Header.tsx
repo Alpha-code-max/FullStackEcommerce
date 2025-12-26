@@ -1,47 +1,27 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { Phone, Wrench, MapPin, LogIn, UserPlus, Menu, X } from 'lucide-react';
 import Link from 'next/link';
-import { User } from '@/lib/api';
+import { useState, useEffect } from 'react';
+import { useAuthStore } from '@/store/authStore'; // Adjust path if needed
 
 export function Header() {
-  const [user, setUser] = useState<User | null>(null);
+  // Zustand store values and actions
+  const { user, isAuthenticated, isLoading, loadUser, logout } = useAuthStore();
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // Auto-load user on component mount (in case page is refreshed)
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch("http://localhost:3000/user/me", {
-          method: "GET",
-          credentials: "include",
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data);
-        }
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    };
-
-    fetchUser();
-  }, []);
+    if (!isAuthenticated && !isLoading) {
+      loadUser();
+    }
+  }, []); // Only run once on mount
 
   const handleLogout = async () => {
-    try {
-      const res = await fetch("http://localhost:3000/user/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (res.ok) {
-        setUser(null);
-        window.location.href = "/";
-      }
-    } catch (error) {
-      console.error("Error logging out:", error);
+    const result = await logout();
+    if (result.success) {
+      setMenuOpen(false); // Close mobile menu
+      window.location.href = '/'; // Or use router.push('/') if using Next.js navigation
     }
   };
 
@@ -77,9 +57,11 @@ export function Header() {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center space-x-6">
-            {user ? (
+            {isLoading ? (
+              <span className="text-gray-500 text-sm">Loading...</span>
+            ) : isAuthenticated && user ? (
               <>
-                <span className="text-gray-700 font-medium">Hi, {user.name}</span>
+                <span className="text-gray-700 font-medium">Hi, {user.name || user.email}</span>
                 {user.role === 'admin' && (
                   <Link href="/admin" className="text-sm text-blue-600 hover:underline">
                     Admin Dashboard
@@ -134,9 +116,11 @@ export function Header() {
       {menuOpen && (
         <div className="md:hidden bg-white border-t border-gray-200 shadow-md">
           <nav className="flex flex-col space-y-4 p-4">
-            {user ? (
+            {isLoading ? (
+              <span className="text-gray-500">Loading user...</span>
+            ) : isAuthenticated && user ? (
               <>
-                <span className="text-gray-700 font-medium">Hi, {user.name}</span>
+                <span className="text-gray-700 font-medium">Hi, {user.name || user.email}</span>
                 {user.role === 'admin' && (
                   <Link href="/admin" className="text-sm text-blue-600 hover:underline">
                     Admin Dashboard

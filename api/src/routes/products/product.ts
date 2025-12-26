@@ -13,7 +13,7 @@ import {
 
 
 const productsRouter = Router()
-productsRouter.get('/', isAuthenticated, getProducts)
+productsRouter.get('/', getProducts)
 productsRouter.post('/', isAuthenticated, isAuthorized("admin"), postProducts)
 productsRouter.get('/:id', getProduct)
 productsRouter.put('/:id', isAuthenticated, isAuthorized("admin"), putProduct)

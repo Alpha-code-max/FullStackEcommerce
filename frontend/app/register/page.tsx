@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { UserPlus2, ChevronDown } from 'lucide-react';
+import { useAuthStore } from '@/store/authStore';
+import { useRouter } from 'next/navigation';
 
 export default function SignupPage() {
   const [form, setForm] = useState({
@@ -15,44 +17,38 @@ export default function SignupPage() {
     password: '',
     confirmPassword: '',
     address: '',
-    role: 'user', // default role
+    role: 'user' as 'user' | 'admin',
   });
-  const [serverError, setServerError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+
+  const { register, isLoading, error, successMessage, clearMessages } = useAuthStore();
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.id]: e.target.value });
+    clearMessages();
   };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setServerError(null);
+    clearMessages();
 
+    // Frontend-only password match check
     if (form.password !== form.confirmPassword) {
-      setServerError('Passwords do not match');
-      setLoading(false);
+      useAuthStore.setState({ error: 'Passwords do not match' });
       return;
     }
 
-    try {
-      const res = await fetch(`http://localhost:3000/user/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
+    // ← Only send fields expected by backend schema
+    const result = await register({
+      name: form.name.trim(),
+      email: form.email.trim(),
+      password: form.password,
+      address: form.address.trim(),
+      role: form.role,
+    });
 
-      const result = await res.json();
-
-      if (!res.ok) {
-        setServerError(result.message || 'Signup failed');
-      } else {
-        window.location.href = '/login';
-      }
-    } catch (err) {
-      setServerError('Something went wrong. Please try again.');
-    } finally {
-      setLoading(false);
+    if (result.success) {
+      router.push('/login');
     }
   };
 
@@ -68,25 +64,42 @@ export default function SignupPage() {
 
         <form onSubmit={handleSignup}>
           <CardContent className="space-y-6">
-            {/* Name */}
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
-              <Input id="name" type="text" placeholder="John Doe" value={form.name} onChange={handleChange} required />
+              <Input
+                id="name"
+                type="text"
+                placeholder="John Doe"
+                value={form.name}
+                onChange={handleChange}
+                required
+              />
             </div>
 
-            {/* Email */}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="you@example.com" value={form.email} onChange={handleChange} required />
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={form.email}
+                onChange={handleChange}
+                required
+              />
             </div>
 
-            {/* Address */}
             <div className="space-y-2">
               <Label htmlFor="address">Address</Label>
-              <Input id="address" type="text" placeholder="Your address" value={form.address} onChange={handleChange} required />
+              <Input
+                id="address"
+                type="text"
+                placeholder="Your delivery address"
+                value={form.address}
+                onChange={handleChange}
+                required
+              />
             </div>
 
-            {/* Role */}
             <div className="space-y-2">
               <Label htmlFor="role" className="flex items-center gap-2">
                 <UserPlus2 className="h-5 w-5 text-gray-500" />
@@ -110,34 +123,51 @@ export default function SignupPage() {
                 </div>
               </div>
             </div>
-            {/* Password */}
+
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" placeholder="••••••••" value={form.password} onChange={handleChange} required />
+              <Input
+                id="password"
+                type="password"
+                placeholder="At least 6 characters"
+                value={form.password}
+                onChange={handleChange}
+                required
+                minLength={6}
+              />
             </div>
 
-            {/* Confirm Password */}
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input id="confirmPassword" type="password" placeholder="••••••••" value={form.confirmPassword} onChange={handleChange} required />
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="Repeat your password"
+                value={form.confirmPassword}
+                onChange={handleChange}
+                required
+                minLength={6}
+              />
             </div>
 
-            {serverError && <p className="text-sm text-red-500">{serverError}</p>}
+            {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+            {successMessage && <p className="text-sm text-green-600 text-center">{successMessage}</p>}
           </CardContent>
 
           <CardFooter className="flex flex-col space-y-4">
             <Button
               type="submit"
-              disabled={loading}
+              disabled={isLoading}
               className="w-full rounded-full py-5 text-base font-medium shadow-md 
               bg-gradient-to-r from-blue-500 to-indigo-600 text-white 
               hover:shadow-lg hover:from-blue-600 hover:to-indigo-700"
             >
-              {loading ? 'Signing up...' : 'Sign Up'}
+              {isLoading ? 'Creating Account...' : 'Sign Up'}
             </Button>
+
             <p className="text-sm text-gray-500 text-center">
               Already have an account?{' '}
-              <Link href="/login" className="text-blue-600 hover:underline">
+              <Link href="/login" className="text-blue-600 hover:underline font-medium">
                 Log In
               </Link>
             </p>

@@ -21,6 +21,7 @@ const getProducts = async (req: Request, res: Response<ProductResponse>) => {
     const products = await prisma.product.findMany();
     res.json({ message: "The list of products is here", products });
   } catch (error: any) {
+    console.log(error)
     res.status(500).json({ message: "Error fetching products", error: error.message });
   }
 };

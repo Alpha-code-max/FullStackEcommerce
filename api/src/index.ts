@@ -6,10 +6,10 @@ import userRouter from './routes/auth/user'
 import ordersRouter from './routes/orders/order'
 
 const app = express()
-const port = 3000
+const port = 5000
 
 app.use(cors({
-  origin: 'http://localhost:3001', // allow your frontend origin
+  origin: 'http://localhost:3000', // allow your frontend origin
   credentials: true               // if you're using cookies or auth headers
 }));
 app.use(json())
@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-app.use('/products', productsRouter)
+app.use('/api/products', productsRouter)
 app.use('/user', userRouter)
 app.use('/orders', ordersRouter)
 
