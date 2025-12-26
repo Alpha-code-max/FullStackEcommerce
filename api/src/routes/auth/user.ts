@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { UserInputSchema, UserInputType, UserLoginSchema, UserLoginType } from '../../schema/user.schema';
+import { UserInputSchema, UserInputType, UserLoginSchema, UserLoginType } from '../../schema/user.schema.js';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
