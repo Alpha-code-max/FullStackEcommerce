@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,10 +26,15 @@ export default function AddProductPage() {
   });
 
   // Redirect if not authenticated or not admin
+  useEffect(() => {
   if (!isAuthenticated || user?.role !== 'admin') {
     router.replace('/products');
-    return null;
   }
+}, [isAuthenticated, user, router]);
+
+if (!isAuthenticated || user?.role !== 'admin') {
+  return null; // prevent UI flash
+}
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
