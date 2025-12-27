@@ -8,7 +8,10 @@ const app = express()
 const port = 5000
 
 app.use(cors({
-  origin: 'http://localhost:3000', // allow your frontend origin
+  origin: [
+  "http://localhost:3000",
+  "https://fullstackcommerce-alpha-dev.onrender.com",
+], // allow your frontend origin
   credentials: true               // if you're using cookies or auth headers
 }));
 app.use(json())

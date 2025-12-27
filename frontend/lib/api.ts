@@ -2,7 +2,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://fullstackecommerce-wax9.onrender.com',        // same baseURL as your auth endpoints
+  baseURL: 'https://fullstackecommerce-wax9.onrender.com',
+  // baseURL: 'http://localhost:5000',        // same baseURL as your auth endpoints
   withCredentials: true,                   // if you're using session cookies
   headers: {
     'Content-Type': 'application/json',
