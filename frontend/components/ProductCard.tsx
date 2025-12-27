@@ -18,7 +18,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const { deleteProduct, isLoading } = useProductStore();
 
   const isAdmin = isAuthenticated && user?.role === 'admin';
-  const inStock = (product.stock ?? 0) > 0;
+  const inStock = product.inStock                           ;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-NG', {

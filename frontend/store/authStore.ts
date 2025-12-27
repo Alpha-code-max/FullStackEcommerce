@@ -123,11 +123,10 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => ({
         user: state.user
           ? {
-              id: state.user.id,
+              id: state.user._id,
               name: state.user.name,
               email: state.user.email,
               role: state.user.role,
-              address: state.user.address,
               // Add any other safe, serializable fields
             }
           : null,

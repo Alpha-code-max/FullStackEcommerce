@@ -2,7 +2,6 @@ export interface RegisterPayload {
   name: string;
   email: string;
   password: string;
-  confirmPassword: string;
   address: string;
   role: "user" | "admin";
 }

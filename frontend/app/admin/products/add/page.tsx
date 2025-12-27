@@ -49,7 +49,7 @@ export default function AddProductPage() {
     price: Number(form.price),
     stock: Number(form.stock) || 0,
     categoryId: form.categoryId || null,
-    userId: user?.id || user?._id, // ensure this exists
+    userId: user?._id, // ensure this exists
   };
 
   const result = await createProduct(payload);
